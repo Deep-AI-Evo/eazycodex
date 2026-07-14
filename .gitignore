@@ -1,16 +1,20 @@
 # Build outputs
 outputs/
 dist/
+build/
+*.log
 
 # Cloned reference repos
 work/
 
 # Large bundled packages
 resources/
-eazycodex/resources/
 
 # Dependencies
 node_modules/
+
+# Generated assets
+assets/icon.ico
 
 # IDE / OS
 .vscode/

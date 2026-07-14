@@ -441,7 +441,7 @@ function proxyResponsesRequest(req, res, requestBody) {
    log('Proxy: req model="' + (parsed.model || 'none') + '" -> upstream model="' + chatBody.model + '" | ' + chatBody.messages.length + ' msgs | stream=' + chatBody.stream + ' | tools=' + (chatBody.tools ? chatBody.tools.length : 0));
  } catch (e) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: { message: 'Invalid request body: ' + e.message } }));
+    res.end(JSON.stringify({ error: { message: '无效的请求体: ' + e.message } }));
     return;
   }
 
@@ -517,7 +517,7 @@ function proxyResponsesRequest(req, res, requestBody) {
           log('Proxy: Failed to parse response: ' + e.message);
           if (!res.headersSent) {
             res.writeHead(502, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: { message: 'Failed to parse upstream response' } }));
+            res.end(JSON.stringify({ error: { message: '解析上游响应失败' } }));
           }
         }
       });
@@ -529,7 +529,7 @@ function proxyResponsesRequest(req, res, requestBody) {
     proxyReq.destroy();
     if (!res.headersSent) {
       res.writeHead(504, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: { message: 'DeepSeek API timeout' } }));
+      res.end(JSON.stringify({ error: { message: 'DeepSeek API 请求超时' } }));
     }
   });
 
@@ -537,7 +537,7 @@ function proxyResponsesRequest(req, res, requestBody) {
     log('Proxy: Request error: ' + e.message);
     if (!res.headersSent) {
       res.writeHead(502, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: { message: 'Failed to connect to DeepSeek API: ' + e.message } }));
+      res.end(JSON.stringify({ error: { message: '连接 DeepSeek API 失败: ' + e.message } }));
     }
   });
 
@@ -1011,11 +1011,11 @@ function start() {
       req.on('end', function() {
         var requestBody = Buffer.concat(bodyChunks);
         if (req.url === '/v1/responses' || req.url === '/responses') {
-          if (!apiKey) { res.writeHead(503, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { message: 'DeepSeek API key not configured.' } })); return; }
+          if (!apiKey) { res.writeHead(503, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { message: 'DeepSeek API Key 未配置' } })); return; }
           proxyResponsesRequest(req, res, requestBody); return;
         }
         if (req.url === '/v1/chat/completions' || req.url === '/chat/completions') {
-          if (!apiKey) { res.writeHead(503, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { message: 'DeepSeek API key not configured.' } })); return; }
+          if (!apiKey) { res.writeHead(503, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { message: 'DeepSeek API Key 未配置' } })); return; }
           proxyPassthrough(req, res, requestBody); return;
         }
         proxyPassthrough(req, res, requestBody);

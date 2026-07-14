@@ -66,7 +66,7 @@ function launch() {
   if (!aumid) {
     return {
       success: false,
-      message: 'Codex desktop app not found. Please install Codex first.'
+      message: '未找到 Codex 桌面版，请先安装 Codex'
     };
   }
 
@@ -79,9 +79,9 @@ function launch() {
     });
     child.unref();
 
-    return { success: true, message: 'Codex desktop app launched', aumid: aumid };
+    return { success: true, message: 'Codex 桌面版已启动', aumid: aumid };
   } catch (e) {
-    return { success: false, message: 'Failed to launch: ' + e.message };
+    return { success: false, message: '启动失败: ' + e.message };
   }
 }
 

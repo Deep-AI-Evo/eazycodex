@@ -126,7 +126,7 @@ async function installNode(progressCb) {
   if (nodeInfo.installed) {
     progressCb({ type: 'output', message: 'Node.js ' + nodeInfo.version + ' \u5df2\u5b89\u88c5\uff0c\u8df3\u8fc7' });
     progressCb({ type: 'done', message: 'Node.js \u5df2\u5b89\u88c5' });
-    return { success: true, message: 'Node.js already installed: ' + nodeInfo.version };
+    return { success: true, message: 'Node.js 已安装: ' + nodeInfo.version };
   }
 
   var hasWinget = await checkWinget();
@@ -170,7 +170,7 @@ async function installCodex(progressCb) {
   if (codexInfo.installed) {
     progressCb({ type: 'output', message: 'Codex \u684c\u9762\u7248\u5df2\u5b89\u88c5\uff08v' + (codexInfo.version || '?') + '\uff09\uff0c\u8df3\u8fc7' });
     progressCb({ type: 'done', message: 'Codex \u684c\u9762\u7248\u5df2\u5b89\u88c5' });
-   return { success: true, message: 'Codex desktop already installed' };
+   return { success: true, message: 'Codex 桌面版已安装' };
  }
 
  // Method 0: try bundled Codex package if available (offline install)
@@ -269,11 +269,11 @@ async function installCodexBundled(progressCb) {
       "$target='" + targetDir.replace(/'/g, "''") + "'",
       "if(Test-Path $target){Remove-Item $target -Recurse -Force}",
       "New-Item -ItemType Directory -Path $target -Force|Out-Null",
-      "Write-Output 'Extracting...'",
+      "Write-Output '正在解压...'",
       "Expand-Archive -Path $zip -DestinationPath $target -Force",
       "$manifest=Join-Path $target 'AppxManifest.xml'",
       "if(-not(Test-Path $manifest)){Write-Output 'ERROR:ManifestNotFound';exit 1}",
-      "Write-Output 'Registering Codex package...'",
+      "Write-Output '正在注册 Codex 包...'",
       "try{",
       "  Add-AppxPackage -Register $manifest -ErrorAction Stop",
       "  Write-Output 'REGISTER_SUCCESS'",
@@ -416,7 +416,7 @@ async function install(dependency, progressCb) {
     case 'codex':
       return installCodex(progressCb);
     default:
-      return { success: false, message: 'Unknown dependency: ' + dependency };
+      return { success: false, message: '未知依赖: ' + dependency };
   }
 }
 

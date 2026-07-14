@@ -102,7 +102,7 @@ ipcMain.handle('launch-codex', async () => {
   // Ensure config and proxy are ready before launching
   const settings = configManager.readSettings();
   if (!settings.apiKey) {
-    return { success: false, message: 'Please configure your DeepSeek API key first.' };
+    return { success: false, message: '请先配置 DeepSeek API Key' };
   }
 
 // Make sure config is written
@@ -115,7 +115,7 @@ proxy.setApiKey(settings.apiKey);
     try {
       await proxy.start();
     } catch (e) {
-      return { success: false, message: 'Failed to start proxy: ' + e.message };
+      return { success: false, message: '启动代理失败: ' + e.message };
     }
   }
 
@@ -160,7 +160,7 @@ ipcMain.handle('test-api-key', async (event, apiKey) => {
   }
   return new Promise((resolve) => {
     if (!apiKey || apiKey.length < 10) {
-      resolve({ success: false, message: 'API key looks too short' });
+      resolve({ success: false, message: 'API Key 长度不足' });
       return;
     }
 
@@ -188,7 +188,7 @@ ipcMain.handle('test-api-key', async (event, apiKey) => {
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
         if (res.statusCode === 200) {
-          resolve({ success: true, message: 'API key is valid' });
+          resolve({ success: true, message: 'API Key 有效' });
         } else {
           try {
             const parsed = JSON.parse(body);
@@ -202,12 +202,12 @@ ipcMain.handle('test-api-key', async (event, apiKey) => {
     });
 
     req.on('error', (e) => {
-      resolve({ success: false, message: 'Network error: ' + e.message });
+      resolve({ success: false, message: '网络错误: ' + e.message });
     });
 
     req.on('timeout', () => {
       req.destroy();
-      resolve({ success: false, message: 'Request timed out' });
+      resolve({ success: false, message: '请求超时' });
     });
 
     req.write(postData);

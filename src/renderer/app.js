@@ -60,7 +60,7 @@ function updateWizardUI(data) {
     bannerOk.style.display = 'flex';
     bannerWarn.style.display = 'none';
     var models = data.deps.find(function(d) { return d.id === 'deepseek'; });
-    $('depOkDetail').textContent = models && models.detail ? '  model: ' + models.detail : '';
+    $('depOkDetail').textContent = models && models.detail ? '  模型: ' + models.detail : '';
     depList.classList.remove('expanded');
     bannerOk.querySelector('.dep-banner-chevron').classList.remove('expanded');
   } else {
@@ -81,11 +81,11 @@ function updateWizardUI(data) {
 
     if (dep.installed) {
       el.className = 'dep-item ok';
-      desc.textContent = dep.detail || 'installed';
+      desc.textContent = dep.detail || '已安装';
       btn.style.display = 'none';
     } else {
       el.className = 'dep-item ' + (dep.required ? 'err' : 'warn');
-      desc.textContent = dep.required ? 'not installed' : 'not installed (optional)';
+      desc.textContent = dep.required ? '未安装' : '未安装（可选）';
       btn.style.display = 'block';
     }
   }
@@ -123,17 +123,17 @@ async function handleInstall(dependency) {
   btn.classList.add('installing');
   btn.disabled = true;
   var originalText = btn.textContent;
-  btn.textContent = 'Installing...';
+  btn.textContent = '安装中...';
 
   try {
     var result = await window.easyCodex.installDependency(dependency);
     if (result.success) {
-      showToast('Installed successfully', 'success');
+      showToast('安装成功', 'success');
     } else {
-      showToast(result.message || 'Installation failed', 'error');
+      showToast(result.message || '安装失败', 'error');
     }
   } catch (e) {
-    showToast('Install error: ' + e.message, 'error');
+    showToast('安装错误: ' + e.message, 'error');
   }
 
   btn.classList.remove('installing');
@@ -221,15 +221,15 @@ async function checkProxyHealth() {
     if (resp.ok) {
       var data = await resp.json();
       dot.className = 'status-dot online';
-      text.textContent = data.hasKey ? 'proxy ready' : 'proxy waiting for key';
+      text.textContent = data.hasKey ? '代理就绪' : '等待 API Key';
     } else {
       dot.className = 'status-dot error';
-      text.textContent = 'proxy error';
+      text.textContent = '代理错误';
     }
   } catch (e) {
     dot.className = 'status-dot';
     dot.style.background = 'var(--warning)';
-    text.textContent = 'starting proxy...';
+    text.textContent = '正在启动代理...';
   }
 }
 
@@ -285,7 +285,7 @@ async function handleSave() {
   }
 
   $('saveBtn').disabled = true;
-  $('saveBtn').textContent = 'Saving...';
+  $('saveBtn').textContent = '保存中...';
 
  try {
    var result = await window.easyCodex.saveConfigFull(apiKey, model, effort, ctxWindow);
@@ -301,7 +301,7 @@ async function handleSave() {
   }
 
   $('saveBtn').disabled = false;
-  $('saveBtn').textContent = 'Save';
+  $('saveBtn').textContent = '保存';
 }
 
 async function handleTest() {
@@ -313,7 +313,7 @@ async function handleTest() {
   }
 
  $('testBtn').disabled = true;
- $('testBtn').textContent = 'Testing...';
+ $('testBtn').textContent = '测试中...';
 
  try {
    var result = await window.easyCodex.testApiKey(apiKey);
@@ -341,7 +341,7 @@ async function handleTest() {
  }
 
  $('testBtn').disabled = false;
- $('testBtn').textContent = 'Test';
+ $('testBtn').textContent = '测试';
 }
 
 // --- Toast ---

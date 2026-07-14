@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>easyCodex</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 2L25 8V20L14 26L3 20V8L14 2Z" stroke="#4fc3f7" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M14 9L19 12V18L14 21L9 18V12L14 9Z" fill="#4fc3f7" opacity="0.4"/>
+            <circle cx="14" cy="14" r="2.5" fill="#4fc3f7"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">easyCodex</span>
+          <span class="logo-subtitle">DeepSeek + Codex</span>
+        </div>
+      </div>
+      <div class="proxy-status" id="proxyStatus">
+        <span class="status-dot" id="proxyDot"></span>
+        <span id="proxyText">connecting</span>
+      </div>
+    </header>
+
+    <!-- Dependency Wizard -->
+    <section class="dep-section" id="depSection">
+      <div class="dep-banner dep-banner-ok" id="depBannerOk" style="display:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>环境就绪</span>
+        <span class="dep-banner-detail" id="depOkDetail"></span>
+        <svg class="dep-banner-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+      <div class="dep-banner dep-banner-warn" id="depBannerWarn" style="display:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>需要安装依赖</span>
+        <svg class="dep-banner-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+      <div class="dep-list" id="depList">
+        <div class="dep-item" id="depNode">
+          <div class="dep-check"><svg class="check-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="dep-info">
+            <span class="dep-name">Node.js</span>
+            <span class="dep-desc" id="depNodeDesc">checking...</span>
+          </div>
+          <button class="dep-btn" id="depNodeBtn" data-dep="node" style="display:none">Install</button>
+        </div>
+        <div class="dep-item" id="depCodex">
+          <div class="dep-check"><svg class="check-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="dep-info">
+            <span class="dep-name">Codex Desktop</span>
+            <span class="dep-desc" id="depCodexDesc">checking...</span>
+          </div>
+          <button class="dep-btn" id="depCodexBtn" data-dep="codex" style="display:none">Install</button>
+        </div>
+        <div class="dep-item" id="depDeepseek">
+          <div class="dep-check"><svg class="check-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="dep-info">
+            <span class="dep-name">DeepSeek API Key</span>
+            <span class="dep-desc" id="depDeepseekDesc">checking...</span>
+          </div>
+          <button class="dep-btn" id="depDeepseekBtn" data-dep="deepseek" style="display:none">Configure</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Config Panel (above launch button, collapsible) -->
+    <section class="config-panel">
+      <div class="config-header" id="configToggle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>DeepSeek 配置</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+      <div class="config-body" id="configBody">
+        <div class="config-inner">
+          <div class="config-row">
+            <label class="config-label" for="apiKeyInput">DeepSeek API Key</label>
+            <div class="api-key-wrapper">
+              <input
+                type="password"
+                id="apiKeyInput"
+                class="api-key-input"
+                placeholder="sk-..."
+                autocomplete="off"
+                spellcheck="false"
+              >
+              <button class="toggle-visibility" id="toggleVisibility" title="show/hide">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="api-key-actions">
+              <button class="btn-test" id="testBtn">测试</button>
+              <button class="btn-save" id="saveBtn">保存</button>
+            </div>
+            <a class="get-key-link" id="getKeyLink">获取 DeepSeek API Key</a>
+          </div>
+          <div class="config-row">
+            <label class="config-label" for="modelSelect">模型</label>
+            <select id="modelSelect" class="model-select">
+              <option value="deepseek-v4-pro">DeepSeek-V4 Pro</option>
+              <option value="deepseek-v4-flash">DeepSeek-V4 Flash</option>
+            </select>
+          </div>
+         <div class="config-row">
+           <label class="config-label" for="effortSelect">推理强度</label>
+           <select id="effortSelect" class="model-select">
+             <option value="low">低（快速）</option>
+             <option value="medium">中</option>
+             <option value="high" selected>高</option>
+           </select>
+         </div>
+          <div class="config-row">
+            <label class="config-label" for="ctxInput">上下文长度（tokens）</label>
+            <input
+              type="text"
+              id="ctxInput"
+              class="model-select"
+              placeholder="默认"
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <span class="ctx-hint" id="ctxHint"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Launch Button -->
+    <section class="launch-section">
+      <button class="launch-btn" id="launchBtn">
+        <div class="launch-btn-glow"></div>
+        <svg class="launch-btn-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <span class="launch-btn-text">启动 Codex</span>
+      </button>
+      <p class="launch-hint" id="launchHint">点击启动 Codex 桌面版</p>
+    </section>
+
+    <!-- Log Panel -->
+    <section class="log-panel" id="logPanel">
+      <div class="log-header">
+        <span>代理日志</span>
+        <button class="btn-clear-log" id="clearLogBtn">清空</button>
+      </div>
+      <div class="log-content" id="logContent"></div>
+    </section>
+
+    <!-- Footer Brand -->
+    <footer class="brand-footer">
+      <span class="brand-text">壹我AI出品</span>
+    </footer>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

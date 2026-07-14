@@ -1,0 +1,31 @@
+# Build outputs
+outputs/
+dist/
+
+# Cloned reference repos
+work/
+
+# Large bundled packages
+resources/
+eazycodex/resources/
+
+# Dependencies
+node_modules/
+
+# IDE / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Codex runtime
+.codex/
+.agents/
+
+# Test temp
+C:\tmp\
+*.zip
+*.exe
+*.msix
+*.appx
+*.appxbundle

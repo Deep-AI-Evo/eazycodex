@@ -1,0 +1,50 @@
+{
+  "name": "eazycodex",
+  "version": "4.0.0",
+  "description": "One-click install and launch Codex with DeepSeek for Chinese users",
+  "main": "src/main.js",
+  "author": "easyCodex",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win",
+    "build:cn": "powershell -ExecutionPolicy Bypass -File build-cn.ps1",
+    "dist": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "jimp": "^1.6.1"
+  },
+  "build": {
+    "appId": "com.eazycodex.app",
+    "productName": "easyCodex",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "easyCodex"
+    }
+  }
+}

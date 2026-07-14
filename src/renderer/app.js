@@ -242,7 +242,7 @@ async function handleLaunch() {
   btn.disabled = true;
   btn.classList.add('launching');
   btn.querySelector('.launch-btn-text').textContent = '正在启动...';
-  hint.textContent = '正在启动 Codex 桌面版，请稍候';
+  hint.textContent = '正在打开，请稍等';
 
   try {
     var result = await window.easyCodex.launchCodex();

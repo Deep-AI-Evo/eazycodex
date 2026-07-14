@@ -123,7 +123,7 @@ Matches cc-switch's DeepSeek config exactly:
 
 ### License
 
-MIT
+PolyForm Noncommercial 1.0.0
 
 ---
 
@@ -237,7 +237,7 @@ DeepSeek API (api.deepseek.com)
 
 ### 开源协议
 
-MIT
+PolyForm Noncommercial 1.0.0
 
 ---
 

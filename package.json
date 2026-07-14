@@ -4,7 +4,7 @@
   "description": "One-click install and launch Codex with DeepSeek for Chinese users",
   "main": "src/main.js",
   "author": "easyCodex",
-  "license": "MIT",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",

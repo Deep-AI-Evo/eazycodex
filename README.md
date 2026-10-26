@@ -80,6 +80,8 @@ This reduces Electron download time from ~5 min to ~15 sec.
 
 ### Usage
 
+> 📥 **Download the installer** from the [Releases](https://github.com/Deep-AI-Evo/eazycodex/releases) page — [latest version](https://github.com/Deep-AI-Evo/eazycodex/releases/latest).
+
 1. **Install** — Run `easyCodex Setup.exe`
 2. **Configure** — Open easyCodex, paste your DeepSeek API key, click Save
 3. **Launch** — Click the large circular button to start Codex with DeepSeek
@@ -193,6 +195,8 @@ npm run build
 | 整合版 | `build-bundled.ps1` | ~746 MB | 内置 Codex 安装包，离线安装；失败则回退到商店 |
 
 ### 使用方法
+
+> 📥 **下载安装包**：[Releases 页面](https://github.com/Deep-AI-Evo/eazycodex/releases) · [最新版直链](https://github.com/Deep-AI-Evo/eazycodex/releases/latest)
 
 1. **安装** —— 运行 `easyCodex Setup.exe`
 2. **配置** —— 打开 easyCodex，粘贴你的 DeepSeek API Key，点击保存

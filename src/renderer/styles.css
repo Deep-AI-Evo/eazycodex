@@ -594,6 +594,22 @@ body {
   border-color: var(--accent);
 }
 
+.model-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.model-row .model-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-sync {
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+
 .ctx-hint {
   font-size: 11px;
   color: var(--text-dim);

@@ -76,6 +76,68 @@ ipcMain.handle('read-settings', async () => {
   return configManager.readSettings();
 });
 
+ipcMain.handle('get-model-catalog', async () => {
+  return configManager.getModelCatalog();
+});
+
+// Fetch the live model list from the DeepSeek API, persist it, and refresh
+// the proxy's /v1/models catalog so Codex sees the same models.
+ipcMain.handle('sync-models', async () => {
+  const settings = configManager.readSettings();
+  if (!settings.apiKey || settings.apiKey.length < 10) {
+    return { success: false, message: '请先填写并保存 DeepSeek API Key' };
+  }
+
+  return new Promise((resolve) => {
+    const req = https.request({
+      hostname: 'api.deepseek.com',
+      port: 443,
+      path: '/v1/models',
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${settings.apiKey}` },
+      timeout: 30000,
+      family: 4
+    }, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        if (res.statusCode !== 200) {
+          let errMsg = `HTTP ${res.statusCode}`;
+          try {
+            const parsed = JSON.parse(body);
+            errMsg = parsed.error?.message || errMsg;
+          } catch {}
+          resolve({ success: false, message: errMsg });
+          return;
+        }
+        try {
+          const ids = (JSON.parse(body).data || []).map(m => m.id).filter(Boolean);
+          if (ids.length === 0) {
+            resolve({ success: false, message: 'API 未返回任何模型' });
+            return;
+          }
+          configManager.saveSyncedModels(ids);
+          proxy.setModelCatalog(configManager.getModelCatalog());
+          resolve({ success: true, models: ids });
+        } catch (e) {
+          resolve({ success: false, message: '解析响应失败: ' + e.message });
+        }
+      });
+    });
+
+    req.on('error', (e) => {
+      resolve({ success: false, message: '网络错误: ' + e.message });
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      resolve({ success: false, message: '请求超时' });
+    });
+
+    req.end();
+  });
+});
+
 ipcMain.handle('save-config', async (event, apiKey, model, reasoningEffort) => {
   try {
     configManager.configure(apiKey, model, reasoningEffort, null);
@@ -165,7 +227,7 @@ ipcMain.handle('test-api-key', async (event, apiKey) => {
     }
 
     const postData = JSON.stringify({
-      model: 'deepseek-v4-flash',
+      model: 'deepseek-flash',
       messages: [{ role: 'user', content: 'Hi' }],
       max_tokens: 5,
       stream: false
@@ -251,6 +313,7 @@ if (!gotSingleLock) {
    if (settings.model) {
      proxy.setModel(settings.model);
    }
+   proxy.setModelCatalog(configManager.getModelCatalog());
 
    try {
       await proxy.start();

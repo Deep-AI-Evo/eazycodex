@@ -12,9 +12,10 @@ var settings = null;
 var ctxUserTouched = false;
 
 var MODEL_CTX = {
-  'deepseek-v4-flash': 1000000,
-  'deepseek-v4-pro': 128000
+  'deepseek-flash': 1000000,
+  'deepseek-v4-pro': 1000000
 };
+var modelCatalog = [];
 
 function formatCtx(n) {
   if (!n || n <= 0) return '';
@@ -32,10 +33,78 @@ function updateCtxHint() {
   }
 }
 
+// --- Model catalog (dynamic, refreshable from the DeepSeek API) ---
+
+function fallbackCatalog() {
+  return [
+    { slug: 'deepseek-v4-pro', name: 'DeepSeek-V4 Pro', contextWindow: 1000000 },
+    { slug: 'deepseek-flash', name: 'DeepSeek Flash (V4.1)', contextWindow: 1000000 }
+  ];
+}
+
+async function loadModelCatalog() {
+  try {
+    modelCatalog = await window.easyCodex.getModelCatalog();
+  } catch (e) {
+    modelCatalog = fallbackCatalog();
+  }
+  MODEL_CTX = {};
+  modelCatalog.forEach(function(m) { MODEL_CTX[m.slug] = m.contextWindow; });
+  populateModelSelect();
+}
+
+function populateModelSelect() {
+  var sel = $('modelSelect');
+  var current = sel.value || (settings && settings.model) || '';
+  sel.innerHTML = '';
+  modelCatalog.forEach(function(m) {
+    var opt = document.createElement('option');
+    opt.value = m.slug;
+    opt.textContent = m.name;
+    sel.appendChild(opt);
+  });
+  // Keep a saved model selectable even if it disappeared from the latest list
+  if (current && !MODEL_CTX[current]) {
+    var extra = document.createElement('option');
+    extra.value = current;
+    extra.textContent = current + '（不在最新列表）';
+    sel.appendChild(extra);
+  }
+  if (current) sel.value = current;
+  updateCtxHint();
+}
+
+async function handleSyncModels() {
+  var btn = $('syncModelsBtn');
+  btn.disabled = true;
+  btn.textContent = '同步中...';
+
+  try {
+    var result = await window.easyCodex.syncModels();
+    if (result.success) {
+      await loadModelCatalog();
+      var msg = '已同步 ' + result.models.length + ' 个模型';
+      if (settings && settings.model && !MODEL_CTX[settings.model]) {
+        msg += '；当前模型 ' + settings.model + ' 已不在列表，建议更换后保存';
+      }
+      showToast(msg, 'success');
+      addLogEntry('[同步] 最新模型: ' + result.models.join(', '), 'info');
+    } else {
+      showToast('同步失败: ' + (result.message || '未知错误'), 'error');
+    }
+  } catch (e) {
+    showToast('错误: ' + e.message, 'error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '同步';
+}
+
 // --- Init ---
 async function init() {
   bindEvents();
   await loadSettings();
+  await loadModelCatalog();
   await refreshWizard();
   startProxyPolling();
 }
@@ -377,6 +446,7 @@ function bindEvents() {
   $('launchBtn').addEventListener('click', handleLaunch);
   $('saveBtn').addEventListener('click', handleSave);
   $('testBtn').addEventListener('click', handleTest);
+  $('syncModelsBtn').addEventListener('click', handleSyncModels);
 
   $('modelSelect').addEventListener('change', function() {
     ctxUserTouched = false;

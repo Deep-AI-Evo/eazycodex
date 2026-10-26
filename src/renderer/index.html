@@ -120,10 +120,13 @@
           </div>
           <div class="config-row">
             <label class="config-label" for="modelSelect">模型</label>
-            <select id="modelSelect" class="model-select">
-              <option value="deepseek-v4-pro">DeepSeek-V4 Pro</option>
-              <option value="deepseek-v4-flash">DeepSeek-V4 Flash</option>
-            </select>
+            <div class="model-row">
+              <select id="modelSelect" class="model-select">
+                <option value="deepseek-v4-pro">DeepSeek-V4 Pro</option>
+                <option value="deepseek-flash">DeepSeek Flash (V4.1)</option>
+              </select>
+              <button id="syncModelsBtn" class="btn-test btn-sync" title="从 DeepSeek API 获取最新模型列表">同步</button>
+            </div>
           </div>
          <div class="config-row">
            <label class="config-label" for="effortSelect">推理强度</label>

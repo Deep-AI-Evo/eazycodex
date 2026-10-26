@@ -16,42 +16,41 @@ const DEEPSEEK_API_BASE = 'https://api.deepseek.com';
 const PROXY_PORT = 18731;
 const UPSTREAM_TIMEOUT_MS = 600000;
 
-const MODEL_CATALOG = {
-  models: [
-    {
-      slug: 'deepseek-v4-flash',
-      name: 'DeepSeek-V4 Flash',
-      supported_in_api: true,
-      supported_reasoning_levels: [
-        { effort: 'low', description: 'Fast responses with lighter reasoning' },
-        { effort: 'medium', description: 'Balanced speed and reasoning' },
-        { effort: 'high', description: 'Greater reasoning depth' }
-      ],
-      apply_patch_tool_type: 'freeform',
-      shell_type: 'shell_command',
-      support_verbosity: true,
-      priority: 1000
-    },
-    {
-      slug: 'deepseek-v4-pro',
-      name: 'DeepSeek-V4 Pro',
-      supported_in_api: true,
-      supported_reasoning_levels: [
-        { effort: 'high', description: 'Maximum reasoning depth' }
-      ],
-      apply_patch_tool_type: 'freeform',
-      shell_type: 'shell_command',
-      support_verbosity: false,
-      priority: 900
-    }
-  ]
-};
+// Base model list: entries are {slug, name, contextWindow}. Replaced at
+// runtime by setModelCatalog() when the app syncs models from the DeepSeek API.
+let MODEL_CATALOG = { models: [] };
 
-function modelContextWindow(slug) {
-  if (slug === 'deepseek-v4-flash') return 1000000;
-  if (slug === 'deepseek-v4-pro') return 128000;
-  return 128000;
+function buildCatalogEntry(entry) {
+  return {
+    slug: entry.slug,
+    name: entry.name || entry.slug,
+    supported_in_api: true,
+    supported_reasoning_levels: [
+      { effort: 'low', description: 'Fast responses with lighter reasoning' },
+      { effort: 'medium', description: 'Balanced speed and reasoning' },
+      { effort: 'high', description: 'Greater reasoning depth' }
+    ],
+    apply_patch_tool_type: 'freeform',
+    shell_type: 'shell_command',
+    support_verbosity: true,
+    priority: 1000,
+    context_window: entry.contextWindow || 128000,
+    max_context_window: entry.contextWindow || 128000,
+    truncation_policy: { limit: 10000, mode: 'tokens' }
+  };
 }
+
+const DEFAULT_MODELS = [
+  { slug: 'deepseek-flash', name: 'DeepSeek Flash (V4.1)', contextWindow: 1000000 },
+  { slug: 'deepseek-v4-pro', name: 'DeepSeek-V4 Pro', contextWindow: 1000000 }
+];
+
+function setModelCatalog(catalog) {
+  if (!Array.isArray(catalog) || catalog.length === 0) return;
+  MODEL_CATALOG = { models: catalog.map(buildCatalogEntry) };
+}
+
+setModelCatalog(DEFAULT_MODELS);
 
 let apiKey = '';
 let server = null;
@@ -996,13 +995,7 @@ function start() {
       }
      if (req.url === '/v1/models' || req.url === '/models') {
        res.writeHead(200, { 'Content-Type': 'application/json' });
-        var modelsWithCtx = MODEL_CATALOG.models.map(function(m) {
-          m.context_window = modelContextWindow(m.slug);
-          m.max_context_window = modelContextWindow(m.slug);
-          m.truncation_policy = { limit: 10000, mode: 'tokens' };
-          return m;
-        });
-        res.end(JSON.stringify({ models: modelsWithCtx }));
+        res.end(JSON.stringify({ models: MODEL_CATALOG.models }));
         return;
      }
 
@@ -1036,4 +1029,4 @@ function stop() {
 
 function isRunning() { return server !== null && server.listening; }
 
-module.exports = { start: start, stop: stop, isRunning: isRunning, setApiKey: setApiKey, setModel: setModel, setLogCallback: setLogCallback, PROXY_PORT: PROXY_PORT };
+module.exports = { start: start, stop: stop, isRunning: isRunning, setApiKey: setApiKey, setModel: setModel, setModelCatalog: setModelCatalog, setLogCallback: setLogCallback, PROXY_PORT: PROXY_PORT };

@@ -17,12 +17,37 @@ const { getCodexHome } = require('./detector');
 const PROXY_BASE_URL = 'http://127.0.0.1:18731/v1';
 
 const CONTEXT_WINDOWS = {
-  'deepseek-v4-flash': 1000000,
-  'deepseek-v4-pro': 128000
+  'deepseek-flash': 1000000,
+  'deepseek-v4-pro': 1000000
+};
+
+const MODEL_NAMES = {
+  'deepseek-flash': 'DeepSeek Flash (V4.1)',
+  'deepseek-v4-pro': 'DeepSeek-V4 Pro'
 };
 
 function getContextWindow(model) {
   return CONTEXT_WINDOWS[model] || 128000;
+}
+
+// Model list shown in UI and served by the proxy: the synced list from the
+// DeepSeek API if present, otherwise the built-in defaults above.
+function getModelCatalog() {
+  const settings = readSettings();
+  const ids = Array.isArray(settings.syncedModels) && settings.syncedModels.length > 0
+    ? settings.syncedModels
+    : Object.keys(CONTEXT_WINDOWS);
+  return ids.map((id) => ({
+    slug: id,
+    name: MODEL_NAMES[id] || id,
+    contextWindow: CONTEXT_WINDOWS[id] || 128000
+  }));
+}
+
+function saveSyncedModels(ids) {
+  const settings = readSettings();
+  settings.syncedModels = ids;
+  writeSettings(settings);
 }
 
 const MANAGED_KEYS = [
@@ -219,7 +244,13 @@ function ensureAuth() {
 }
 
 function configure(apiKey, model, reasoningEffort, contextWindow) {
-  writeSettings({ apiKey, model, reasoningEffort, contextWindow: contextWindow || 0 });
+  // Merge into existing settings so syncedModels and other fields survive saves
+  const settings = readSettings();
+  settings.apiKey = apiKey;
+  settings.model = model;
+  settings.reasoningEffort = reasoningEffort;
+  settings.contextWindow = contextWindow || 0;
+  writeSettings(settings);
   applyConfigWithCtx(model, reasoningEffort, contextWindow || 0);
   ensureAuth();
 }
@@ -241,5 +272,7 @@ module.exports = {
   getSettingsPath,
   PROXY_BASE_URL,
   getContextWindow,
-  CONTEXT_WINDOWS
+  CONTEXT_WINDOWS,
+  getModelCatalog,
+  saveSyncedModels
 };

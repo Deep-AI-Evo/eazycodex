@@ -15,6 +15,8 @@ contextBridge.exposeInMainWorld('easyCodex', {
  saveConfigFull: (apiKey, model, reasoningEffort, contextWindow) =>
      ipcRenderer.invoke('save-config-full', apiKey, model, reasoningEffort, contextWindow),
   readSettings: () => ipcRenderer.invoke('read-settings'),
+  getModelCatalog: () => ipcRenderer.invoke('get-model-catalog'),
+  syncModels: () => ipcRenderer.invoke('sync-models'),
   launchCodex: () => ipcRenderer.invoke('launch-codex'),
  testApiKey: (apiKey) => ipcRenderer.invoke('test-api-key', apiKey),
  diagnoseConnection: () => ipcRenderer.invoke('diagnose-connection'),

@@ -249,4 +249,8 @@ PolyForm Noncommercial 1.0.0
 
 **壹我AI出品**
 
+<img src="assets/gzh_qrcode.jpg" width="180" alt="微信公众号二维码" />
+
+**扫码关注微信公众号，获取最新动态与使用教程**
+
 </div>
